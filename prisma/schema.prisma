@@ -4,25 +4,44 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+//Generates the client
 generator client {
   provider = "prisma-client-js"
 }
 
+//Declares source db type, use sqlite for simplicity
+//Can change into any support db types
 datasource db {
   provider = "sqlite"
-  url      = env("file:./test.db")
+  url      = "file:../test.db"
 }
 
+//Model = Table in dbs
+//varName type @properties
 model Student{
+
+  //@id = Primary key
+  //@default = set default value
+  //autoincrement() = increases default value by 1 for every new record
   id Int @id @default(autoincrement())
+
+  //@unique = all records must have different values
   email String @unique
+
+  //?=Optional, can be null
+  preferred_name String?
   first_name String
   last_name String
-  preferred_name String?
+  age Int
+  //relates the student object to an array of Class objects
+  //joins the two tables under the name StudentClass
+  classes Class[] @relation("StudentClass")
 }
 
-model Classes{
-  id Int @id @default(autoincrement())
-  name String
-  student_name String
+model Class{
+  className String @id @unique
+  difficulty String 
+  teacher String
+  classroom Int
+  Student Student[] @relation("StudentClass")
 }
